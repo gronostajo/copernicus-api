@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import re
 import operator
 import serial
@@ -200,10 +202,10 @@ class Copernicus:
         if timeout is not None and \
                 type(timeout) is not int and type(timeout) is not float and \
                 type(timeout) is type(serial.Serial()):
-            print >> sys.stderr, 'Warning: You\'re using the old API call. Instead of this:'
-            print >> sys.stderr, '    api = Copernicus(my_conn)'
-            print >> sys.stderr, 'Use this:'
-            print >> sys.stderr, '    api = Copernicus(connection=my_conn)'
+            print('Warning: You\'re using the old API call. Instead of this:', file=sys.stderr)
+            print('    api = Copernicus(my_conn)', file=sys.stderr)
+            print('Use this:', file=sys.stderr)
+            print('    api = Copernicus(connection=my_conn)', file=sys.stderr)
             connection = timeout
 
         if connection is None:
@@ -286,12 +288,12 @@ class Copernicus:
         char = self._connection.read(1)
         if len(char) > 0:
             if self._debug:
-                print 'Byte received: {0:b}'.format(ord(char))
+                print('Byte received: {0:b}'.format(ord(char)))
             self.handle(char)
             return True
         else:
             if self._debug:
-                print 'Timed out'
+                print('Timed out')
             return False
 
     def load_commands(self, commands):
@@ -317,4 +319,4 @@ class Copernicus:
         char = self._commands[cmd].translate(*args)
         self._connection.write(char)
         if self._debug:
-            print 'Byte sent: {0:b}'.format(ord(char))
+            print('Byte sent: {0:b}'.format(ord(char)))
