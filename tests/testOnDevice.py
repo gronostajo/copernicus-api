@@ -13,7 +13,7 @@ class OnDeviceTests(unittest.TestCase):
         serial_mock.write = MagicMock()
 
         # noinspection PyTypeChecker
-        api = Copernicus(serial_mock)
+        api = Copernicus(connection=serial_mock)
 
         def knob_handler(value):
             api.command('servo', value / 2)

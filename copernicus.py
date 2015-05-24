@@ -1,7 +1,7 @@
 import re
 import operator
 import serial
-
+import sys
 
 __author__ = 'Krzysztof "gronostaj" Smialek'
 __all__ = ['Copernicus']
@@ -187,15 +187,28 @@ class Copernicus:
         'query': Command('11______', Codecs.encode_services)
     }
 
-    def __init__(self, connection=None):
+    def __init__(self, timeout=None, connection=None):
         """
         Creates a new Copernicus API object and loads default events and commands.
+        :param timeout: Serial connection timeout for listen() calls. Either this of connection arg must be None.
         :param connection: Serial object to use for communication with Copernicus.
         :type connection: serial.Serial
         """
+        assert timeout is None or connection is None
+
+        if timeout is not None and \
+                type(timeout) is not int and type(timeout) is not float and \
+                type(timeout) is type(serial.Serial()):
+            print >> sys.stderr, 'Warning: You\'re using the old API call. Instead of this:'
+            print >> sys.stderr, '    api = Copernicus(my_conn)'
+            print >> sys.stderr, 'Use this:'
+            print >> sys.stderr, '    api = Copernicus(connection=my_conn)'
+            connection = timeout
+
         if connection is None:
-            connection = serial.Serial('/dev/ttyS0', 38400)
-        self._connection = connection
+            self._connection = serial.Serial('/dev/ttyS0', 38400, timeout=timeout)
+        else:
+            self._connection = connection
 
         self._events = []
         self._handlers = {}
@@ -266,9 +279,15 @@ class Copernicus:
     def listen(self):
         """
         Waits for incoming byte and fires appropriate event.
+        :return: Whether event was received (True) or read operation timed out (False).
+        :rtype: bool
         """
         char = self._connection.read(1)
-        self.handle(char)
+        if len(char) > 0:
+            self.handle(char)
+            return True
+        else:
+            return False
 
     def load_commands(self, commands):
         """

@@ -46,7 +46,7 @@ To create a connection with Copernicus, simply create a Copernicus object:
 
 If you don't like default serial connection (`ttyS0`, 38400 bd), you can supply your own one:
 
-    api = Copernicus(MyCustomSerial())
+    api = Copernicus(connection=MyCustomSerial())
 
 ## Commands
 
@@ -114,4 +114,30 @@ Moreover, a default handler can be defined that will be called if event-specific
 
     while True:
         api.listen()
- 
+
+
+## Non-blocking listening
+
+`listen()` blocks until an event is received. If you want to simulate non-blocking listening, use constructor with the `timeout` argument:
+
+    api = Copernicus(timeout=0.1)
+    
+This will make `listen()` timeout every 1/10th of a second if no command is received, so the listening loop will unblock at least 10 times every second to process queued operations:
+
+    while True:
+        api.listen()  # This lasts 0.1s or less if event is received, then
+                      # queued operations are executed and the loop repeats
+
+For example this program will toggle LED ten times a second or as soon as any event is received:
+
+    api = Copernicus(timeout=0.1)
+    led_state = False
+
+    while True:
+        led_state = not led_state
+        api.command('led', led_state)
+        api.listen()
+        
+`listen()` returns `True` if listening ends due to incoming event, or `False` if listening times out.
+
+Do not rely on `listen()` timeouts for time counting, as incoming events can cause `listen()` to return prematurely.

@@ -29,7 +29,7 @@ class CommandsTests(unittest.TestCase):
         serial_mock.write = MagicMock()
 
         # noinspection PyTypeChecker
-        api = Copernicus(serial_mock)
+        api = Copernicus(connection=serial_mock)
         api.load_commands({
             'test': Command('11______')
         })

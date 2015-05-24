@@ -10,7 +10,7 @@ class EventHandlingTests(unittest.TestCase):
     @staticmethod
     def get_api():
         # noinspection PyTypeChecker
-        api = Copernicus(MagicMock())
+        api = Copernicus(connection=MagicMock())
         api.load_events([
             Event('case1', '1_______'),
             Event('case0', '0_______')
@@ -46,7 +46,7 @@ class EventHandlingTests(unittest.TestCase):
 
     def test_should_fail_on_unknown_event(self):
         # noinspection PyTypeChecker
-        api = Copernicus(MagicMock())
+        api = Copernicus(connection=MagicMock())
         api.load_events([])
         with self.assertRaises(KeyError):
             api.handle(chr(int('00000000', 2)))
@@ -55,7 +55,7 @@ class EventHandlingTests(unittest.TestCase):
         serial_mock = MagicMock()
         serial_mock.read = MagicMock(return_value=chr(151))
         # noinspection PyTypeChecker
-        api = Copernicus(serial_mock)
+        api = Copernicus(connection=serial_mock)
 
         handler = MagicMock()
         api.set_handler('temperature', handler)
