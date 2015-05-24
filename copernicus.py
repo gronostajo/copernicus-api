@@ -187,13 +187,14 @@ class Copernicus:
         'query': Command('11______', Codecs.encode_services)
     }
 
-    def __init__(self, timeout=None, connection=None):
+    def __init__(self, timeout=None, connection=None, debug=False):
         """
         Creates a new Copernicus API object and loads default events and commands.
         :param timeout: Serial connection timeout for listen() calls. Either this of connection arg must be None.
         :param connection: Serial object to use for communication with Copernicus.
         :type connection: serial.Serial
         """
+        self._debug = debug
         assert timeout is None or connection is None
 
         if timeout is not None and \
@@ -284,9 +285,13 @@ class Copernicus:
         """
         char = self._connection.read(1)
         if len(char) > 0:
+            if self._debug:
+                print 'Byte received: {0:b}'.format(ord(char))
             self.handle(char)
             return True
         else:
+            if self._debug:
+                print 'Timed out'
             return False
 
     def load_commands(self, commands):
@@ -311,3 +316,5 @@ class Copernicus:
             raise KeyError('Unknown command {0}'.format(cmd))
         char = self._commands[cmd].translate(*args)
         self._connection.write(char)
+        if self._debug:
+            print 'Byte sent: {0:b}'.format(ord(char))

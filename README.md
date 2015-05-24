@@ -141,3 +141,11 @@ For example this program will toggle LED ten times a second or as soon as any ev
 `listen()` returns `True` if listening ends due to incoming event, or `False` if listening times out.
 
 Do not rely on `listen()` timeouts for time counting, as incoming events can cause `listen()` to return prematurely.
+
+## Having problems?
+
+You can enable debug messages by supplying `debug=True` to the constructor:
+
+    api = Copernicus(debug=True)
+    
+API will print all incoming and outgoing byte values, so that you can compare them with raw byte values on [AGH Copernicus homepage](http://home.agh.edu.pl/~tszydlo/copernicus/).
