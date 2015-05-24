@@ -227,7 +227,7 @@ class Copernicus:
         :type handler: (T) -> None
         """
         if event not in self._handlers:
-            raise ValueError('Unknown event `{0}`')
+            raise ValueError('Unknown event `{0}`'.format(event))
         self._handlers[event] = handler
 
     def set_default_handler(self, handler):
